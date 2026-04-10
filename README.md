@@ -1,5 +1,5 @@
 ---
-# Data-Efficient Multi-Target Generative Attack with Learnable Prompts
+# Learning to Attack: Frequency-Aware Targeted Transfer Attacks via CLIP-Guided Learnable Conditioning
 
 <img width="1047" height="293" alt="Overall_pipeline" src="https://github.com/user-attachments/assets/86106d45-9a7c-42b0-a2c3-4610370ed7e6"/>
 
