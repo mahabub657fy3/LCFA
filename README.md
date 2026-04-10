@@ -1,7 +1,7 @@
 ---
 # Data-Efficient Multi-Target Generative Attack with Learnable Prompts
 
-<img width="1064" height="260" alt="diagram" src="https://github.com/user-attachments/assets/15e93c3e-2917-4185-8f24-71d09a513c4c" />
+<img width="1047" height="293" alt="Overall_pipeline" src="https://github.com/user-attachments/assets/86106d45-9a7c-42b0-a2c3-4610370ed7e6"/>
 
 ## **Abstract**
 
@@ -9,7 +9,7 @@ Deep Neural Networks (DNNs) are critically vulnerable to adversarial examples, p
 
 ---
 Average targeted success rate (TSR) as a function of training dataset size (10k–100k). Shaded regions indicate the absolute TSR improvement of our method over CGNC.
-<img width="1500" height="900" alt="Figure_1" src="https://github.com/user-attachments/assets/6228664d-36f2-448a-b2e7-9993d55487b7" />
+<img width="2664" height="1616" alt="ASR_comparison_revamped" src="https://github.com/user-attachments/assets/56021301-d8c8-4a71-b962-e57cfa03a59d" />
 
 ## **Features**
 
