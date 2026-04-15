@@ -19,7 +19,6 @@ def main():
     parser.add_argument('--label_flag', type=str, default='N8', help='ImageNet: N8,C20,C50,C100,C200')
     parser.add_argument('--nz', type=int, default=16, help='Latent/cond dim for generator')
     parser.add_argument('--save_dir', type=str, default='results')
-    parser.add_argument('--prompt_mode', type=str, default='learnable',choices=['precomputed', 'learnable'],help='How to obtain CLIP text features')
     parser.add_argument('--clip_backbone', type=str, default='ViT-B/16')
     parser.add_argument('--ctx_dim', type=int, default=512)
     parser.add_argument('--prompt_ckpt', type=str, default='prompt-9.pth',help='Checkpoint of LearnablePrompt (for prompt_mode=learnable)')
@@ -69,36 +68,27 @@ def main():
     prompt_learner = None
     global_to_local = None
 
-    if args.prompt_mode == 'precomputed':
-        text_feature_path = 'imagenet_text_feature_multi_prompt.pth'
 
-        print(f"Loading precomputed text features from: {args.text_feature_path}")
-        text_cond_dict = torch.load(args.text_feature_path,map_location=device)
-        # ensure on device
-        for k, v in text_cond_dict.items():
-            if isinstance(v, torch.Tensor):
-                text_cond_dict[k] = v.to(device)
-    else:
-        from prompt_learner import LearnablePrompt
+    from prompt_learner import LearnablePrompt
 
-        class_index = getClassIndex(args.dataset)
-        used_ids = np.array(sorted(class_ids.tolist()))
-        classnames = [class_index[int(i)][1] for i in used_ids]
+    class_index = getClassIndex(args.dataset)
+    used_ids = np.array(sorted(class_ids.tolist()))
+    classnames = [class_index[int(i)][1] for i in used_ids]
 
-        print("Using LearnablePrompt for classes:")
-        for gid, name in zip(used_ids, classnames):
-            print(f"global id {int(gid):4d} -> '{name}'")
+        
+    for gid, name in zip(used_ids, classnames):
+        print(f"global id {int(gid):4d} -> '{name}'")
 
-        prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device,ctx_dim=args.ctx_dim,).to(device)
+    prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device,ctx_dim=args.ctx_dim,).to(device)
 
-        if args.prompt_ckpt is None:
-            raise ValueError("You must provide --prompt_ckpt when prompt_mode='learnable'")
+    if args.prompt_ckpt is None:
+        raise ValueError("You must provide --prompt_ckpt when prompt_mode='learnable'")
         print(f"Loading LearnablePrompt checkpoint from: {args.prompt_ckpt}")
         prompt_state = torch.load(args.prompt_ckpt, map_location=device)
         prompt_learner.load_state_dict(prompt_state)
         prompt_learner.eval()
 
-        global_to_local = {int(gid): idx for idx, gid in enumerate(used_ids)}
+    global_to_local = {int(gid): idx for idx, gid in enumerate(used_ids)}
 
     # ---- Generate & save adversarial images ----
     netG.eval()
@@ -113,15 +103,9 @@ def main():
         for i, (img, _) in enumerate(test_loader):
             img = img.to(device)
             b = img.size(0)
-
-            # Build text condition 'cond' depending on prompt mode
-            if args.prompt_mode == 'precomputed':
-                base_feat = text_cond_dict[target_class]  # [D]
-                cond = base_feat.unsqueeze(0).expand(b, -1)  # [B, D]
-            else:
-                # learnable prompts
-                local_idx = torch.full((b,),global_to_local[target_class],dtype=torch.long,device=device)
-                cond = prompt_learner(local_idx)  # [B, D]
+           
+            local_idx = torch.full((b,),global_to_local[target_class],dtype=torch.long,device=device)
+            cond = prompt_learner(local_idx)  # [B, D]
 
             adv = netG(img, cond, eps=eps)
             adv = torch.min(torch.max(adv, img - eps), img + eps)
