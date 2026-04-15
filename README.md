@@ -9,7 +9,7 @@
 Deep neural networks (DNNs) are highly susceptible to adversarial examples, raising substantial concerns in safety-critical applications. Conditional generative attacks have emerged as an attractive research direction due to their strong transferability and efficient single-pass inference. However, existing multi-target methods condition the generator on fixed text templates that are never optimized for the adversarial objective and inject perturbations directly into clean source images, introducing a semantic conflict that suppresses target-class signals. To address these limitations, we propose Learnable Conditioning for Frequency-Aware Attacks (LCFA), a data-efficient generative attack framework that couples CLIP-guided learnable prompt conditioning with low-frequency perturbation injection. LCFA optimizes continuous per-class context vectors in the CLIP embedding space. This allows the conditioning signal to adapt the attack objective and explore target-aligned semantic directions beyond static prompts. Rather than perturbing the clean image directly, LCFA embeds the perturbation in the low-pass filtered image. This decouples the adversarial signal from the source-class semantics by exploiting the role of low-frequency content in targeted classification decisions. Together, these two principles substantially enhance cross-model semantic generalization while requiring only a limited training subset. Comprehensive experiments on ImageNet and CIFAR-10 show that LCFA achieves state-of-the-art targeted transferability. Notably, LCFA achieves a 22.03% higher success rate than the best baseline when transferring from ResNet-50 to DenseNet121 on 100k ImageNet samples.
 
 ---
-Average targeted success rate (TSR) as a function of training dataset size (10k–100k). Shaded regions indicate the absolute TSR improvement of our method over CGNC.
+Average attack success rate (ASR) as a function of training dataset size (10k–100k). Shaded regions indicate the absolute ASR improvement of our method over CGNC.
 <img width="2664" height="1616" alt="ASR_comparison_revamped" src="https://github.com/user-attachments/assets/eacaaba4-36f8-4561-8569-f6a89dd3d047" />
 
 
@@ -19,18 +19,6 @@ Average targeted success rate (TSR) as a function of training dataset size (10k�
 * **One-click Inference:** Easily evaluate the performance of the adversarial attack on CIFAR-10 or ImageNet datasets.
 * **One-click Training:** Train the model from scratch or resume from a checkpoint with minimal setup.
 * **Pretrained Models:** Download pretrained models from Google Drive or upload your own model checkpoint (`.pth` file).
-
----
-
-## **Pipeline Overview**
-
-The overall pipeline for the LP-LFGA framework is as follows:
-
-1. **Data Input:** Input images are processed through data augmentation and normalization.
-2. **Frequency Decomposition:** The low-frequency components of the image are extracted using a Gaussian filter.
-3. **CLIP-Guided Conditioning:** The model is conditioned using text embeddings from CLIP, either precomputed or learned through a prompt module.
-4. **Adversarial Generation:** The conditional generator produces adversarial examples that perturb the low-frequency components.
-5. **Model Evaluation:** The generated adversarial examples are evaluated for transferability and effectiveness against the victim model.
 
 ---
 
