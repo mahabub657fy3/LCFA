@@ -84,9 +84,9 @@ def main():
     if args.prompt_ckpt is None:
         raise ValueError("You must provide --prompt_ckpt when prompt_mode='learnable'")
         print(f"Loading LearnablePrompt checkpoint from: {args.prompt_ckpt}")
-        prompt_state = torch.load(args.prompt_ckpt, map_location=device)
-        prompt_learner.load_state_dict(prompt_state)
-        prompt_learner.eval()
+    prompt_state = torch.load(args.prompt_ckpt, map_location=device)
+    prompt_learner.load_state_dict(prompt_state)
+    prompt_learner.eval()
 
     global_to_local = {int(gid): idx for idx, gid in enumerate(used_ids)}
 
