@@ -8,7 +8,7 @@ from generator import Generator
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Data-Efficient Multi-Target Generative Attack with Learnable Prompts- Evaluation')
+    parser = argparse.ArgumentParser(description='Learnable Conditioning for Frequency-Aware Attacks (LCFA)')
     parser.add_argument('--dataset', type=str, default='imagenet')
     parser.add_argument('--data_dir', type=str,default='D:/ImageNet/neurips2017_dev')
     parser.add_argument('--is_nips', action='store_true', default=True)
