@@ -12,7 +12,7 @@ import random
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Data-Efficient Multi-Target Generative Attack with Learnable Prompts')
+    parser = argparse.ArgumentParser(description='Learnable Conditioning for Frequency-Aware Attacks (LCFA)')
     parser.add_argument('--dataset', type=str, default='imagenet')
     parser.add_argument('--train_dir', default='D:/ImageNet/train')
     parser.add_argument('--batch_size', type=int, default=8)
@@ -95,11 +95,10 @@ def main():
     class_ids = np.array(sorted(label_set.tolist()))
     classnames = [class_index[int(i)][1] for i in class_ids]
 
-    if args.prompt_mode == 'learnable':
-        print("Using LearnablePrompt (class-only) for classes:")
-        for gid, name in zip(class_ids, classnames):
-            print(f"global id {gid:4d} -> '{name}'")
-        prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device, ctx_dim=args.ctx_dim,).to(device)
+    for gid, name in zip(class_ids, classnames):
+        print(f"global id {gid:4d} -> '{name}'")
+        
+    prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device, ctx_dim=args.ctx_dim,).to(device)
 
     if args.start_epoch > 0 and args.prompt_ckpt is not None:
         print(f"Loading LearnablePrompt from: {args.prompt_ckpt}")
