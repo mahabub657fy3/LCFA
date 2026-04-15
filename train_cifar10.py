@@ -12,7 +12,7 @@ import random
 
 
 def main():
-    parser = argparse.ArgumentParser('Learnable Conditioning for Frequency-Aware Attacks (LCFA)')
+    parser = argparse.ArgumentParser(description='Learnable Conditioning for Frequency-Aware Attacks (LCFA)')
     # ---- Basic setup ----
     parser.add_argument('--dataset', type=str, default='cifar10')
     parser.add_argument('--train_dir', default='cifar10/train', help='imagenet')
