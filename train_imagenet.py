@@ -25,7 +25,6 @@ def main():
     parser.add_argument('--nz', type=int, default=16, help='nz')
     parser.add_argument('--save_dir', type=str, default='checkpoints_imagenet')
     parser.add_argument('--load_path', type=str, help='Path to checkpoint')
-    parser.add_argument('--prompt_mode', type=str, default='learnable',choices=['precomputed', 'learnable'],help='How to obtain CLIP text features')
     parser.add_argument('--clip_backbone', type=str, default='ViT-B/16')
     parser.add_argument('--ctx_dim', type=int, default=512)
     parser.add_argument('--prompt_ckpt', type=str, default=None)
@@ -67,8 +66,6 @@ def main():
     # Surrogate model
     if args.model_type == 'incv3':
         model = torchvision.models.inception_v3(weights=torchvision.models.Inception_V3_Weights.IMAGENET1K_V1).to(device)
-    elif args.model_type == 'res152':
-        model = torchvision.models.resnet152(weights=torchvision.models.ResNet152_Weights.IMAGENET1K_V1).to(device)
     elif args.model_type == 'res50':
         model = torchvision.models.resnet50(weights=torchvision.models.ResNet50_Weights.IMAGENET1K_V1).to(device)
     else:
@@ -92,31 +89,22 @@ def main():
     prompt_learner = None
     global_to_local = None
 
-    if args.prompt_mode == 'precomputed':
-        text_feature_path = 'imagenet_text_feature_multi_prompt.pth'
-        print(f"Loading precomputed text features from: {text_feature_path}")
-        text_cond_dict = torch.load(args.text_feature_path,map_location=device)
+    from prompt_learner import LearnablePrompt
 
-        for k, v in text_cond_dict.items():
-            if isinstance(v, torch.Tensor):
-                text_cond_dict[k] = v.to(device)
-    else:
-        from prompt_learner import LearnablePrompt
+    class_index = getClassIndex(args.dataset)
+    class_ids = np.array(sorted(label_set.tolist()))
+    classnames = [class_index[int(i)][1] for i in class_ids]
 
-        class_index = getClassIndex(args.dataset)
-        class_ids = np.array(sorted(label_set.tolist()))
-        classnames = [class_index[int(i)][1] for i in class_ids]
+    if args.prompt_mode == 'learnable':
+        print("Using LearnablePrompt (class-only) for classes:")
+        for gid, name in zip(class_ids, classnames):
+            print(f"global id {gid:4d} -> '{name}'")
+        prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device, ctx_dim=args.ctx_dim,).to(device)
 
-        if args.prompt_mode == 'learnable':
-            print("Using LearnablePrompt (class-only) for classes:")
-            for gid, name in zip(class_ids, classnames):
-                print(f"global id {gid:4d} -> '{name}'")
-            prompt_learner = LearnablePrompt(classnames=classnames,clip_backbone=args.clip_backbone,device=device, ctx_dim=args.ctx_dim,).to(device)
-
-        if args.start_epoch > 0 and args.prompt_ckpt is not None:
-            print(f"Loading LearnablePrompt from: {args.prompt_ckpt}")
-            pl_state = torch.load(args.prompt_ckpt, map_location=device)
-            prompt_learner.load_state_dict(pl_state)
+    if args.start_epoch > 0 and args.prompt_ckpt is not None:
+        print(f"Loading LearnablePrompt from: {args.prompt_ckpt}")
+        pl_state = torch.load(args.prompt_ckpt, map_location=device)
+        prompt_learner.load_state_dict(pl_state)
 
         global_to_local = {int(gid): idx for idx, gid in enumerate(class_ids)}
 
@@ -126,10 +114,7 @@ def main():
         netG.load_state_dict(g_state)
 
     # ---- Optimizer (generator + prompt_learner) ----
-    if args.prompt_mode == 'learnable' and prompt_learner is not None:
-        params = list(netG.parameters()) + list(prompt_learner.parameters())
-    else:
-        params = netG.parameters()
+    params = list(netG.parameters()) + list(prompt_learner.parameters())
 
     optimG = optim.Adam(params, lr=args.lr, betas=(0.5, 0.999))
 
@@ -152,12 +137,8 @@ def main():
             label = np.random.choice(label_set, img.size(0))
             label = torch.from_numpy(label).long().to(device)
 
-            if args.prompt_mode == 'precomputed':
-                cond_list = [text_cond_dict[int(j)] for j in label]
-                cond = torch.stack(cond_list, dim=0).to(device)   # [B, D]
-            else:
-                local_idx = torch.tensor([global_to_local[int(j)] for j in label],dtype=torch.long,device=device)
-                cond = prompt_learner(local_idx)                  # [B, D]
+            local_idx = torch.tensor([global_to_local[int(j)] for j in label],dtype=torch.long,device=device)
+            cond = prompt_learner(local_idx)                 
             optimG.zero_grad()
 
             # Forward generator (perturbations)
