@@ -10,7 +10,7 @@ from generator import Generator
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Data-Efficient Multi-Target Generative Attack with Learnable Prompts- Evaluation')
+    parser = argparse.ArgumentParser(description='Learnable Conditioning for Frequency-Aware Attacks (LCFA)')
     parser.add_argument('--dataset', type=str, default='cifar10')
     parser.add_argument('--data_dir', type=str,default='cifar10/test')
     parser.add_argument('--batch_size', type=int, default=5)
