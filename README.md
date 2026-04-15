@@ -41,8 +41,8 @@ The overall pipeline for the LP-LFGA framework is as follows:
 First, clone the repository and set up the required environment using the provided `environment.yml` file:
 
 ```bash
-git clone https://github.com/mahabub657fy3/LP-LFGA
-cd LP-LFGA
+git clone https://github.com/mahabub657fy3/LCFA
+cd LCFA
 conda env create -f environment.yml
 conda activate lp-lfga
 ```
