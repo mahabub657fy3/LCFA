@@ -1,7 +1,8 @@
 ---
 # Learning to Attack: Frequency-Aware Attack via CLIP-Guided Learnable Conditioning
 
-<img width="1047" height="293" alt="Overall_pipeline" src="https://github.com/user-attachments/assets/86106d45-9a7c-42b0-a2c3-4610370ed7e6"/>
+<img width="1051" height="290" alt="Overall_pipeline" src="https://github.com/user-attachments/assets/9f30c09a-b04f-4068-a075-73adf7ce88cf" />
+
 
 ## **Abstract**
 
@@ -9,7 +10,8 @@ Deep Neural Networks (DNNs) are critically vulnerable to adversarial examples, p
 
 ---
 Average targeted success rate (TSR) as a function of training dataset size (10k–100k). Shaded regions indicate the absolute TSR improvement of our method over CGNC.
-<img width="2664" height="1616" alt="ASR_comparison_revamped" src="https://github.com/user-attachments/assets/56021301-d8c8-4a71-b962-e57cfa03a59d" />
+<img width="2664" height="1616" alt="ASR_comparison_revamped" src="https://github.com/user-attachments/assets/eacaaba4-36f8-4561-8569-f6a89dd3d047" />
+
 
 ## **Features**
 
