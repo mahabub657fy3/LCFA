@@ -77,7 +77,6 @@ python eval_cifar10.py \
     --label_flag C5 \
     --nz 16 \
     --save_dir results_cifar10 \
-    --prompt_mode learnable \
     --clip_backbone ViT-B/16 \
     --ctx_dim 512 \
     --prompt_ckpt checkpoints/cifar10/prompt-9.pth \
@@ -99,7 +98,6 @@ python eval_imagenet.py \
     --label_flag N8 \
     --nz 16 \
     --save_dir results_imagenet \
-    --prompt_mode learnable \
     --clip_backbone ViT-B/16 \
     --ctx_dim 512 \
     --prompt_ckpt checkpoints/imagenet/prompt-9.pth \
@@ -148,7 +146,6 @@ python train_cifar10.py \
     --label_flag C5 \
     --nz 16 \
     --save_dir checkpoints_cifar10 \
-    --prompt_mode learnable \
     --clip_backbone ViT-B/16 \
     --ctx_dim 512 \
     --k 2
@@ -168,7 +165,6 @@ python train_imagenet.py \
     --label_flag N8 \
     --nz 16 \
     --save_dir checkpoints_imagenet \
-    --prompt_mode learnable \
     --clip_backbone ViT-B/16 \
     --ctx_dim 512 \
     --k 4
